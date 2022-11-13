@@ -20,19 +20,19 @@ $ conda install -c bioconda bedtools
 Two genome features are said to overlap or intersect if they share at least one base in common. 
 An overlap between two bed files can be calculated by using the following command,
 ```
-$ bedtools intersect -a bed_file_1.bed -b bed_file_2.bed
+$ bedtools intersect -a $(bed_file_1.bed) -b $(bed_file_2.bed)
 ```
 
 <br>
 
 An overlap between multiple bed files can be calculated by using the following command,
 ```
-$ bedtools intersect -a bed_file_1.bed -b bed_file_2.bed bed_file_3.bed bed_file_4.bed
+$ bedtools intersect -a $(bed_file_1.bed) -b $(bed_file_2.bed) $(bed_file_3.bed) $(bed_file_4.bed)
 ```
 
 ## getfasta
 bedtools getfasta extracts sequences from a FASTA file for each of the intervals defined in a BED/GFF/VCF file.
 To extract the sequence of the binding sites, the following command is used,
 ```
-$ bedtools getfasta -fi fasta_file.fa -bed bed_file.bed
+$ bedtools getfasta -fi $(fasta_file.fa) -bed $(bed_file.bed)
 ```
