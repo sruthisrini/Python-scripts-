@@ -1,4 +1,19 @@
 """
+Reading the metadata tsv file and filtering out the required columns
+"""
+import pandas as pd
+import numpy as np
+
+df=pd.read_csv("metadata_processed_files_hg38.tsv",sep='\t')
+df=df.loc[:,["File accession","File format","File assembly","Biosample term name","Experiment target",
+            "Biological replicate(s)","md5sum","File download URL"]]
+
+df=df[(df["File format"]=="bed narrowPeak")&(df["Biological replicate(s)"]=="1, 2")&(df["File assembly"]=="GRCh38")&
+        (df["Biosample term name"].isin(["HepG2","K562"]))]
+                                                                                                                
+##############################################################################################################################
+
+"""
 After finding overlap among the bed files using 
 '$ bedtools intersect -a $(bed_file_1.bed) -b $(bed_file_2.bed) $(bed_file_3.bed) $(bed_file_4.bed)', 
 store it in a text file
@@ -242,11 +257,18 @@ df_final = df_final[['Sequence',
 
 df_final
 """
-Sequence	UCHL5_K562_IDR	CSTF2T_K562_IDR	ZNF622_K562_IDR	EWSR1_K562_IDR	AQR_K562_IDR	NONO_K562_IDR	GTF2F1_K562_IDR	FUS_K562_IDR	BUD13_K562_IDR	...	ENCFF630KXK_FMR1_K562_IDR	EIF4G2_K562_IDR	FXR2_K562_IDR	TARDBP_K562_IDR	ENCFF136CWQ_FXR1_K562_IDR	ENCFF593RED_TARDBP_K562_IDR	DDX3X_K562_IDR	RBFOX2_K562_IDR	AKAP8L_K562_IDR	GRWD1_K562_IDR
+	Sequence	UCHL5_K562_IDR	CSTF2T_K562_IDR	ZNF622_K562_IDR	EWSR1_K562_IDR	AQR_K562_IDR	NONO_K562_IDR	GTF2F1_K562_IDR	FUS_K562_IDR	BUD13_K562_IDR	...	ENCFF630KXK_FMR1_K562_IDR	EIF4G2_K562_IDR	FXR2_K562_IDR	TARDBP_K562_IDR	ENCFF136CWQ_FXR1_K562_IDR	ENCFF593RED_TARDBP_K562_IDR	DDX3X_K562_IDR	RBFOX2_K562_IDR	AKAP8L_K562_IDR	GRWD1_K562_IDR
 0	TTCACAAAGCGCCTTCCCCCGTAAATGATATCATCTCAACTTAGTA...	0	0	1	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
 1	TCACAAAGCGCCTTCCCCCGTAAATGATATCATCTCAACTTAGTAT...	0	0	1	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
 2	AAGCGCCTTCCCCCGTAAATGATATCATCTCAACTTAGTATTATAC...	0	0	1	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
 3	AGCGCCTTCCCCCGTAAATGATATCATCTCAACTTAGTATTATACC...	0	0	1	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
 4	CGCCTTCCCCCGTAAATGATATCATCTCAACTTAGTATTATACCCA...	0	0	1	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+57096	GGGAAATTGCTACCTATGGCATGTCCCCTTACCCGGGAATTGACCT...	0	0	0	0	0	0	0	0	0	...	1	0	1	0	0	0	0	0	0	0
+57097	TGTAAGCCTTCCTCAGCCTGTTCTCACGAGTATATGTGGGCATTCC...	0	0	0	0	1	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+57098	CAGAGAAGGTCTATGAACTCATGCGAGCATGTAAGCCTTCCTCAGC...	0	0	0	0	1	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+57099	CTTCAGACTTTGATAACCGTGAAGAAAGAACAAGATAGAAGGTGAG...	0	0	0	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+57100	AGACTTTGATAACCGTGAAGAAAGAACAAGATAGAAGGTGAGCTGT...	0	0	0	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+57101 rows , 31 columns
 """
 
