@@ -12,7 +12,7 @@ from model_test import RNNDataset,LSTMModel
 import wandb
 from torchmetrics.classification import MultilabelAccuracy
 
-wandb.init(project="12-feb")
+wandb.init(project="my project")
 
 criterion = BCEWithLogitsLoss()
 model_path=r"D:\multi_label_classification\trained_model.pt"
@@ -28,15 +28,6 @@ def train(model, optimizer, train_loader, criterion, batch_size, device):
         loss_all += loss.item() * len(batch_labels)
         loss.backward()
         optimizer.step()
-#         except:
-#             outputs = outputs.reshape([16, 1,30])
-#             print("shape:",outputs.size())
-#             loss = criterion(outputs, batch_labels)
-#             print("loss:",loss)
-#             loss_all += loss.item() * len(batch_labels)
-#             loss.backward()
-#             optimizer.step()
-#             print(loss_all)
     torch.save(model.state_dict(), model_path)
     return loss_all / len(train_loader.dataset)
 
@@ -54,34 +45,9 @@ def test(test_loader, model, batch_size, criterion, device,
         batch_labels = batch_labels.reshape([len(batch_lens), 30])
         acc = metric(outputs[0], batch_labels)
         test_acc += acc.item()
-        #outputs=outputs.detach().numpy()
-        #batch_labels=batch_labels.detach().numpy()
-        #predicted_labels.append(outputs)
-        #true_labels.append(batch_labels)
-        #print(outputs)
-        #print(batch_labels)
-    
     test_acc = test_acc / len(test_loader)
 
     return test_acc
-        
-    """ count=0
-    accuracy=0
-
-    metric = MultilabelAccuracy(num_labels=30)
-    for i in range(len(predicted_labels)):
-        pred_batch=predicted_labels[i]
-        true_batch=true_labels[i]
-
-        print(pred_batch)
-        print(true_batch)
-        for j in range(len(list(pred_batch))):
-            for k in range(len(list(pred_batch[j]))):
-                accuracy=accuracy+float(metric(torch.tensor([pred_batch[j][k]]), torch.tensor([true_batch[k][0]])))
-                #wandb.log({"accuracy":accuracy})
-                count+=1
-    #wandb.log({"accuracy/count" : accuracy/count})
-    return accuracy/count   """  
     
 
 def pad_collate(batch):
@@ -108,6 +74,5 @@ if __name__ == "__main__":
     for i in range(1,100):
         print("train loss",train(model=projmlc_model,optimizer=optimizer, train_loader=train_loader, criterion=criterion, batch_size=batch_size, device="cpu"))
         print("validation accuracy",test(test_loader=test_loader,model=projmlc_model,batch_size=batch_size,criterion=criterion,device="cpu"))
-    #print(test(test_loader=test_loader,model=projmlc_model,criterion=criterion,device="cpu"))
     torch.save(projmlc_model.state_dict(), model_path)
     
