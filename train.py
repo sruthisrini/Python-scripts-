@@ -76,3 +76,13 @@ if __name__ == "__main__":
         print("validation accuracy",test(test_loader=test_loader,model=projmlc_model,batch_size=batch_size,criterion=criterion,device="cpu"))
     torch.save(projmlc_model.state_dict(), model_path)
     
+    def pred(seq):
+        pred_input=string_vectorizer(seq)
+        pred_input=pred_input.reshape([1,len(pred_input),4])
+        outputs, _ = projmlc_model(pred_input, [len(pred_input)], 1)
+        print(outputs[0])
+        p=outputs[0][0]
+        p= [1 if i>=0.1 else 0 for i in p]
+        return p
+
+    print(pred("CAGGATACTCCTCAATAGCCATCGCTGTAGTATATCCAAAGACAACCATCATTCCCCCTAAATAAATTAAAAAAACTATTAAACCCATATAACCT"))
