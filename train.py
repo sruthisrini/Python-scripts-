@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     train_dataset,test_dataset=train_test_split(projmlc_dataset,test_size=0.2,random_state=0)
     train_dataset_final, val_dataset=train_test_split(train_dataset, test_size=0.25, random_state=0)
-    train_loader = DataLoader(dataset=train_dataset,batch_size=batch_size,collate_fn=pad_collate, pin_memory=True)
+    train_loader = DataLoader(dataset=train_dataset_final,batch_size=batch_size,collate_fn=pad_collate, pin_memory=True)
     test_loader=DataLoader(dataset=val_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
     optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.0001)
     
