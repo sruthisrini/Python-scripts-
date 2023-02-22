@@ -14,7 +14,7 @@ from torchmetrics.classification import MultilabelAccuracy
 
 wandb.init(project="my project")
 
-criterion = BCEWithLogitsLoss()
+criterion = BCEWithLogitsLoss(pos_weight=torch.ones(30)*5)
 model_path=r"D:\multi_label_classification\trained_model.pt"
 def train(model, optimizer, train_loader, criterion, batch_size, device):
     model.train()
