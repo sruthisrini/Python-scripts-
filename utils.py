@@ -272,3 +272,40 @@ df_final
 57101 rows , 31 columns
 """
 
+##############################################################################################################################
+
+import pandas as pd
+
+df = pd.read_csv("K562_formatted_data.csv")
+
+proportions = []
+
+for col in df.columns:
+    vals = df[col].value_counts(normalize=True).to_dict()
+    proportions.append((col, vals.get(0, None), vals.get(1, None)))
+
+pdf = pd.DataFrame(proportions, columns=['Label', '0', '1'])
+# Proportions of 0 and 1 for each label
+pdf
+
+##############################################################################################################################
+
+import torch
+from torchmetrics.classification import MultilabelAccuracy
+
+accuracy = MultilabelAccuracy(num_labels=30)
+
+label_cols = [col for col in df.columns if col != 'Sequence']
+target = torch.tensor(df[label_cols].values)
+
+predictions = torch.zeros(target.shape)
+
+# What's the accuracy of a model that always predicts 0s?
+accuracy(target, predictions)
+
+# What percent of all labels are 0s?
+# Note: same as the accuracy above 
+(1 - (target.sum() / (target.shape[0] * target.shape[1]))) * 100
+
+
+
