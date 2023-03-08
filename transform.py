@@ -16,7 +16,6 @@ def read_data_to_list(csv_file, skip_n_seqs=True):
     RNA_labels = RNA_labels.values.tolist()
 
     return RNA_seq, RNA_labels
-
 def string_vectorizer(seq,empty_vectors=False,embed_numbers=False,embed_one_vec=False,custom_alphabet=False):
     alphabet=['A','C','G','T']
     if custom_alphabet:
@@ -60,7 +59,7 @@ def pad_collate(batch):
 
 
 if __name__ == "__main__":
-    csv_file_path = r"D:\University_of_Freiburg\Semester-4\project_2\K562\K562_sequenced_data.csv"
+    csv_file_path = r"D:\University_of_Freiburg\Semester-4\project_2\K562\K562_formatted_data_march_1 - Copy.csv"
     rna_vecs,rna_labels = prepare_data(csv_file_path)
     data=RNNDataset(rna_vecs,rna_labels)
     dataloader=DataLoader(dataset=data,batch_size=32,shuffle=True,collate_fn=pad_collate,pin_memory=True)
@@ -68,5 +67,5 @@ if __name__ == "__main__":
     dataiter=iter(dataloader)
     datas=dataiter.next()
     features,*labels=datas
-    print("features:",features)
-    print("labels:",labels)
+  
+    
