@@ -10,11 +10,8 @@ from sklearn.model_selection import train_test_split
 from transform import prepare_data,string_vectorizer,read_data_to_list
 from model import RNNDataset,LSTMModel
 import wandb
-from torchmetrics.classification import MultilabelAccuracy
 from sklearn.metrics import f1_score
 import warnings
-from sklearn.exceptions import UndefinedMetricWarning
-from sklearn.metrics import roc_auc_score
 
 wandb.init(project="binary")
 
