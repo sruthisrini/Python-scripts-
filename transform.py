@@ -9,6 +9,7 @@ from torch.nn.utils.rnn import pad_sequence
 
 def read_data_to_list(csv_file, skip_n_seqs=True):
     RNA_data = pd.read_csv(csv_file, header=0)
+    RNA_data=RNA_data.iloc[:,:2]  #only in case of binary classification
     RNA_seq = RNA_data["Sequence"].tolist()
 
     RNA_labels = RNA_data.iloc[::, 1:]
