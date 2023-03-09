@@ -108,11 +108,7 @@ def validation(test_loader, model, batch_size, criterion, device):
     return loss_validation,f1_total_accuracy
 
 def binary_accuracy(preds, y):
-    """
-    Accuracy calculation:
-    Round scores > 0 to 1, and scores <= 0 to 0 (using sigmoid function).
 
-    """
     rounded_preds = torch.round(torch.sigmoid(preds))
     correct = (rounded_preds == y).float()
     acc = correct.sum()/len(correct)
@@ -153,8 +149,34 @@ def pad_collate(batch):
     ys = torch.FloatTensor([[y] for y in ys])
     return xs_pad, ys,xs_lens
 
+def patience(model,patience_count):
+    
+    best_val_loss = 1000000000.0
+    elapsed_patience = 0
+    c_epochs = 0
+
+    for epoch in range(1, 100):
+        c_epochs += 1
+        if elapsed_patience >= patience_count:
+            break
+
+        train_loss,train_f1_score = train(model=projmlc_model,optimizer=optimizer, train_loader=train_loader, criterion=criterion, batch_size=batch_size, device="cpu")
+        val_loss,val_f1_score = validation(test_loader=validation_loader,model=projmlc_model,batch_size=batch_size,criterion=criterion,device="cpu")
+        
+        print('Epoch {}: ({}, {})'.format(epoch, train_loss, val_loss))
+        wandb.log({"train loss":train_loss,"validation loss" : val_loss})
+
+        if val_loss < best_val_loss:
+            elapsed_patience = 0
+            best_val_loss = val_loss
+            torch.save(model.state_dict(), model_path)
+        else:
+            elapsed_patience += 1
+    
+    return train_f1_score,val_f1_score
+
 if __name__ == "__main__":
-    csv_file_path = r"D:\University_of_Freiburg\Semester-4\project_2\K562\K562_formatted_data_march_1 - Copy.csv"
+    csv_file_path = r"K562_formatted_data_march_1 - Copy.csv"
     rna_vecs,rna_labels = prepare_data(csv_file_path)
     projmlc_dataset = RNNDataset(rna_vecs, rna_labels)
     projmlc_model = LSTMModel(input_dim=4, n_class=1, activation='sigmoid',device="cpu")
@@ -169,16 +191,10 @@ if __name__ == "__main__":
     
     test_loader=DataLoader(dataset=test_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
     
-    optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)  
-
-   
-
-    for i in range(1,50):
-        print("epoch",i,",","train loss",train(model=projmlc_model,optimizer=optimizer, train_loader=train_loader, criterion=criterion, batch_size=batch_size, device="cpu"))
-        print("validation loss",validation(test_loader=validation_loader,model=projmlc_model,batch_size=batch_size,criterion=criterion,device="cpu"))
-        wandb.log({"train loss":loss_train,"validation loss" : loss_validation})
+    optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001) 
     
-
+    patience(projmlc_model,5)
+    
     torch.save(projmlc_model.state_dict(), model_path)
 
     projmlc_model.load_state_dict(torch.load(model_path))
@@ -201,6 +217,3 @@ if __name__ == "__main__":
     
     pred_label=pred("GAGGGGCCGGGAGAGGTGGGCAGGGGGCAACAGGGCTTTTATGGGGGATGAGGCCAGGGCTGCCGGCGGTGTCATTGGGCTGGAAGGCCAAAAGGCCTGCCCCTAAAGCTCCTGCCCCTTTTAAATTTCTCCAGCAGGAGGAGGCCTCAGG")
     print([names for names, label in zip(protein_names,pred_label) if label == 1])
-
-    
-
