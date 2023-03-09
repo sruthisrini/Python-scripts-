@@ -12,7 +12,7 @@ from model import RNNDataset,LSTMModel
 import wandb
 import warnings
 
-wandb.init(project="today")
+wandb.init(project="multi label")
 
 def warn(*args, **kwargs):
     pass
@@ -140,6 +140,31 @@ def test(test_loader, model, criterion, device):
     test_acc = test_acc / len(test_loader)
     return test_acc
 
+def patience(model,patience_count):
+    
+    best_val_loss = 1000000000.0
+    elapsed_patience = 0
+    c_epochs = 0
+
+    for epoch in range(1, 10):
+        c_epochs += 1
+        if elapsed_patience >= patience_count:
+            break
+
+        train_loss,train_f1_score = train(model=projmlc_model,optimizer=optimizer, train_loader=train_loader, criterion=criterion, batch_size=batch_size, device="cpu")
+        val_loss,val_f1_score = validation(test_loader=validation_loader,model=projmlc_model,batch_size=batch_size,criterion=criterion,device="cpu")
+        
+        print('Epoch {}: ({}, {})'.format(epoch, train_loss, val_loss))
+        wandb.log({"train loss":train_loss,"validation loss" : val_loss})
+
+        if val_loss < best_val_loss:
+            elapsed_patience = 0
+            best_val_loss = val_loss
+            torch.save(model.state_dict(), model_path)
+        else:
+            elapsed_patience += 1
+    
+    return train_f1_score,val_f1_score
 
 def pad_collate(batch):
     (xs, ys) = zip(*batch)
@@ -166,16 +191,9 @@ if __name__ == "__main__":
     
     test_loader=DataLoader(dataset=test_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
 
-    optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)  
-
-   
-    for i in range(1,50):
-        print("epoch",i,",","train loss",train(model=projmlc_model,optimizer=optimizer, train_loader=train_loader, criterion=criterion, batch_size=batch_size, device="cpu"))
-        print("validation loss",validation(test_loader=validation_loader,model=projmlc_model,batch_size=batch_size,criterion=criterion,device="cpu"))
-        wandb.log({"train loss":loss_train,"validation loss" : loss_validation})
-        
+    optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)
+    patience(projmlc_model,5)
     
-
     torch.save(projmlc_model.state_dict(), model_path)
 
     projmlc_model.load_state_dict(torch.load(model_path))
