@@ -12,7 +12,7 @@ from model import RNNDataset,LSTMModel
 import wandb
 import warnings
 
-wandb.init(project="multi label")
+wandb.init(project="multi-label")
 
 def warn(*args, **kwargs):
     pass
@@ -20,7 +20,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 criterion = BCEWithLogitsLoss() 
-model_path=r"D:\multi_label_classification\march_4_with_0_grad.pt"
+model_path=r"D:\multi_label_classification\multi_label_model.pt"
 def train(model, optimizer, train_loader, criterion, batch_size, device):
     model.train()
     global loss_train
@@ -105,12 +105,7 @@ def validation(test_loader, model, batch_size, criterion, device):
     return loss_validation,f1_total_accuracy
 
 def binary_accuracy(preds, y):
-    """
-    Accuracy calculation:
-    Round scores > 0 to 1, and scores <= 0 to 0 (using sigmoid function).
-
-    """
-
+    
     rounded_preds = torch.round(torch.sigmoid(preds))
     
     correct = (rounded_preds[:][0] == y[:][0]).float()
@@ -146,7 +141,7 @@ def patience(model,patience_count):
     elapsed_patience = 0
     c_epochs = 0
 
-    for epoch in range(1, 10):
+    for epoch in range(1, 100):
         c_epochs += 1
         if elapsed_patience >= patience_count:
             break
@@ -174,7 +169,7 @@ def pad_collate(batch):
     return xs_pad, ys,xs_lens
 
 if __name__ == "__main__":
-    csv_file_path = r"D:\University_of_Freiburg\Semester-4\project_2\K562\K562_formatted_data_march_1 - Copy.csv"
+    csv_file_path = r"K562_formatted_data_march_1 - Copy.csv"
     rna_vecs,rna_labels = prepare_data(csv_file_path)
     projmlc_dataset = RNNDataset(rna_vecs, rna_labels)
     projmlc_model = LSTMModel(input_dim=4, n_class=30, activation='sigmoid',device="cpu")
@@ -183,7 +178,6 @@ if __name__ == "__main__":
     train_dataset,test_dataset=train_test_split(projmlc_dataset,test_size=0.2,random_state=0)
     train_dataset_final, val_dataset=train_test_split(train_dataset, test_size=0.2, random_state=0)  
 
-    
  
     train_loader = DataLoader(dataset=train_dataset_final,batch_size=batch_size,collate_fn=pad_collate, pin_memory=True) 
     
