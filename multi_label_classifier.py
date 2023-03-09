@@ -20,7 +20,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 criterion = BCEWithLogitsLoss() 
-model_path=r"D:\multi_label_classification\multi_label_model.pt"
+model_path=r"D:\multi_label_model.pt"
 def train(model, optimizer, train_loader, criterion, batch_size, device):
     model.train()
     global loss_train
@@ -169,7 +169,7 @@ def pad_collate(batch):
     return xs_pad, ys,xs_lens
 
 if __name__ == "__main__":
-    csv_file_path = r"K562_formatted_data_march_1 - Copy.csv"
+    csv_file_path = r"Dataset.csv"
     rna_vecs,rna_labels = prepare_data(csv_file_path)
     projmlc_dataset = RNNDataset(rna_vecs, rna_labels)
     projmlc_model = LSTMModel(input_dim=4, n_class=30, activation='sigmoid',device="cpu")
