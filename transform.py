@@ -59,7 +59,7 @@ def pad_collate(batch):
 
 
 if __name__ == "__main__":
-    csv_file_path = r"D:\University_of_Freiburg\Semester-4\project_2\K562\K562_formatted_data_march_1 - Copy.csv"
+    csv_file_path = r"K562_formatted_data_march_1 - Copy.csv"
     rna_vecs,rna_labels = prepare_data(csv_file_path)
     data=RNNDataset(rna_vecs,rna_labels)
     dataloader=DataLoader(dataset=data,batch_size=32,shuffle=True,collate_fn=pad_collate,pin_memory=True)
