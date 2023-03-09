@@ -176,7 +176,7 @@ def patience(model,patience_count):
     return train_f1_score,val_f1_score
 
 if __name__ == "__main__":
-    csv_file_path = r"K562_formatted_data_march_1 - Copy.csv"
+    csv_file_path = r"Dataset.csv"
     rna_vecs,rna_labels = prepare_data(csv_file_path)
     projmlc_dataset = RNNDataset(rna_vecs, rna_labels)
     projmlc_model = LSTMModel(input_dim=4, n_class=1, activation='sigmoid',device="cpu")
