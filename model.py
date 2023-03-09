@@ -21,7 +21,7 @@ class LSTMModel(nn.Module):
                  lstm_hidden_dim=32,
                  bidirect=True,
                  add_feat=False,
-                 dropout_rate=0.5,
+                 dropout_rate=0.2,
                  add_fc_layer=True,
                  embed=True,
                  embed_vocab_size=5,
@@ -107,5 +107,5 @@ class LSTMModel(nn.Module):
 
 if __name__ == "__main__":
     
-    test_model = LSTMModel(input_dim=3, n_class=30, device="cpu")
+    test_model = LSTMModel(input_dim=4, n_class=30, device="cpu")
      
