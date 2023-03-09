@@ -21,7 +21,7 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 criterion = BCEWithLogitsLoss() 
-model_path=r"D:\multi_label_classification\binary_model.pt"
+model_path=r"D:\binary_model.pt"
 def train(model, optimizer, train_loader, criterion, batch_size, device):
     model.train()
     global loss_train
