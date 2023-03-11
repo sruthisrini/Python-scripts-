@@ -4,17 +4,7 @@ This project has taken [RNAProt](https://github.com/BackofenLab/RNAProt) as a re
 ```
 GCTGGGCGGCCCCAAGACCTGCTCTGCCTGGGCTTCTCATTGGTGGCATTTCTCAAGTTTGTCGTCTGCACCATCCGGAAAACCACCTCTCTCT
 ```
- 
-## Bedtools
-* Bedtools is a fast, flexible toolset for genome arithmetic. <br>
-* The two most widely used formats for representing genome features are the BED (Browser Extensible Data) and GFF (General Feature Format) formats. <br>
-* Bedtools allows one to intersect, merge, count, complement, and shuffle genomic intervals from multiple files in widely-used genomic file formats such as BAM, BED, GFF/GTF, VCF.
 
-The bed files can be downloaded from the website given below,  
-
-[https://www.encodeproject.org/search/?type=File&searchTerm=bed](https://www.encodeproject.org/search/?type=File&searchTerm=bed)
-
-<br>
 The following approach will only work for Linux systems.
 
 Since RNAProt is used as a reference, the guidelines to clone and use them is given below,
@@ -27,6 +17,18 @@ conda install -c bioconda rnaprot
 conda config --show channels
 conda config --add channels conda-forge
 ```
+ 
+## Bedtools
+* Bedtools is a fast, flexible toolset for genome arithmetic. <br>
+* The two most widely used formats for representing genome features are the BED (Browser Extensible Data) and GFF (General Feature Format) formats. <br>
+* Bedtools allows one to intersect, merge, count, complement, and shuffle genomic intervals from multiple files in widely-used genomic file formats such as BAM, BED, GFF/GTF, VCF.
+
+The bed files can be downloaded from the website given below,  
+
+[https://www.encodeproject.org/search/?type=File&searchTerm=bed](https://www.encodeproject.org/search/?type=File&searchTerm=bed)
+
+<br>
+
 To work with bed files, bed tools need to be installed by using the following command,
 ```
 $ conda install -c bioconda bedtools
