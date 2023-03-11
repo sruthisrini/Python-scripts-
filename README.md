@@ -15,11 +15,23 @@ The bed files can be downloaded from the website given below,
 [https://www.encodeproject.org/search/?type=File&searchTerm=bed](https://www.encodeproject.org/search/?type=File&searchTerm=bed)
 
 <br>
+The following approach will only work for Linux systems.
 
+Since RNAProt is used as a reference, the guidelines to clone and use them is given below,
+```
+git clone https://github.com/BackofenLab/RNAProt.git
+conda --version
+conda create -n rnaprotenv python=3.8 -c conda-forge -c bioconda
+conda activate rnaprotenv
+conda install -c bioconda rnaprot
+conda config --show channels
+conda config --add channels conda-forge
+```
 To work with bed files, bed tools need to be installed by using the following command,
 ```
 $ conda install -c bioconda bedtools
 ```
+The following approach will only work for Linux systems.
 
 ## Overlap calculation
 Two genome features are said to overlap or intersect if they share at least one base in common. 
