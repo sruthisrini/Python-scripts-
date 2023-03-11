@@ -1,5 +1,8 @@
 # Prediction of RNA binding proteins using Pytorch 
-This project takes ([RNAProt](https://github.com/BackofenLab/RNAProt)) as a reference where it uses LSTM model, an advanced version of RNN
+This project has taken [RNAProt](https://github.com/BackofenLab/RNAProt) as a reference which uses LSTM model, an advanced version of RNN to find if the RNA sequence binds to a protein or not. Our project aims to find the number of proteins that binds to a sub-sequence of RNA and compares it with the binary classifier. The input to the model is given as sequences in FASTA format as given below,
+'''
+GCTGGGCGGCCCCAAGACCTGCTCTGCCTGGGCTTCTCATTGGTGGCATTTCTCAAGTTTGTCCCCTCTCAAGTCTGCACCATCCGGAAAACCAAACACCTCTCTCTCCTACATGGAAACCCCCATCAGCACCTCCCCCTGACTCAC
+'''
  
 ## Bedtools
 * Bedtools is a fast, flexible toolset for genome arithmetic. <br>
