@@ -55,6 +55,15 @@ from torch.nn.utils.rnn import pad_sequence
 from sklearn.model_selection import train_test_split
 ```
 
+## Documentation
+
+* The model.py file contains the LSTM model for both the classifiers. Only the number of classes needs to be changed based on the number of labels we have. 
+* The transform.py file contains functions necessary to convert the input fasta sequences and output labels to one-hot encoded values.
+* The utils.py file contains the step-by-step procedure to generate the final dataset required to train and test the model. In order to begin with that process, the metadata needs to be downloaded from [Encode](https://www.encodeproject.org/search/?type=File&searchTerm=bed) which are in BED format.
+
+
+## Results
+Having the binary classifier from [RNAProt](https://github.com/BackofenLab/RNAProt), we compare it with the multi-label classifier for one protein by evaluating the accuracy. It is clearly shown that the binary classifier gives more accuracy than the multi-label classifier.
 
 
 
