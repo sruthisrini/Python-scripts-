@@ -1,4 +1,5 @@
 # Prediction of RNA binding proteins using Pytorch 
+This project takes ([https://github.com/BackofenLab/RNAProt](RNAProt)) as a reference where it uses LSTM model, an advanced version of RNN
  
 ## Bedtools
 * Bedtools is a fast, flexible toolset for genome arithmetic. <br>
@@ -36,5 +37,6 @@ To extract the sequence of the binding sites, the following command is used,
 ```
 $ bedtools getfasta -fi $(fasta_file.fa) -bed $(bed_file.bed)
 ```
-##Installation
+## Installation
+
 
