@@ -57,18 +57,12 @@ $ bedtools getfasta -fi $(fasta_file.fa) -bed $(bed_file.bed)
 ## Libraries required to run the code
 
 ```
-import torch
-from torch import Tensor
-import numpy as np
-import pandas as pd
-import torch.nn as nn
-from torch.nn import BCEWithLogitsLoss
-import torch.nn.functional as F
-from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data import DataLoader,Dataset
-from sklearn.model_selection import train_test_split
-from collections import Counter
-import pyranges as pr
+torch
+numpy
+pandas
+sklearn
+collections
+pyranges
 ```
 
 ## Documentation
