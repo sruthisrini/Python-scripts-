@@ -1,5 +1,5 @@
 # Prediction of RNA binding proteins using Pytorch 
-This project takes ([https://github.com/BackofenLab/RNAProt](RNAProt)) as a reference where it uses LSTM model, an advanced version of RNN
+This project takes ([RNAProt](https://github.com/BackofenLab/RNAProt)) as a reference where it uses LSTM model, an advanced version of RNN
  
 ## Bedtools
 * Bedtools is a fast, flexible toolset for genome arithmetic. <br>
