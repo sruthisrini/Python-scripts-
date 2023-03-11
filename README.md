@@ -5,9 +5,8 @@ This project has taken [RNAProt](https://github.com/BackofenLab/RNAProt) as a re
 GCTGGGCGGCCCCAAGACCTGCTCTGCCTGGGCTTCTCATTGGTGGCATTTCTCAAGTTTGTCGTCTGCACCATCCGGAAAACCACCTCTCTCT
 ```
 
-The following approach will only work for Linux systems.
 
-Since RNAProt is used as a reference, the guidelines to clone and use them is given below,
+Since RNAProt is used as a reference, the guidelines to clone and use them is given below, and the following approach will only work for Linux systems.
 ```
 git clone https://github.com/BackofenLab/RNAProt.git
 conda --version
