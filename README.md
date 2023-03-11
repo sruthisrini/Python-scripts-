@@ -43,6 +43,7 @@ $ bedtools getfasta -fi $(fasta_file.fa) -bed $(bed_file.bed)
 ```
 ## Libraries required to run the code
 
+```
 import torch
 from torch import Tensor
 import numpy as np
@@ -52,6 +53,7 @@ from torch.nn import BCEWithLogitsLoss
 from torch.utils.data import DataLoader,Dataset
 from torch.nn.utils.rnn import pad_sequence
 from sklearn.model_selection import train_test_split
+```
 
 
 
