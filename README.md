@@ -1,4 +1,4 @@
-# This project aims to understand the distribution of K562 and HepG2 Site-ID's binding length
+# Prediction of RNA binding proteins using Pytorch 
  
 ## Bedtools
 * Bedtools is a fast, flexible toolset for genome arithmetic. <br>
@@ -36,3 +36,5 @@ To extract the sequence of the binding sites, the following command is used,
 ```
 $ bedtools getfasta -fi $(fasta_file.fa) -bed $(bed_file.bed)
 ```
+##Installation
+
