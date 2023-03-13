@@ -175,12 +175,13 @@ import pandas as pd
 file_bed=pr.PyRanges(df)
 file_bed.to_bed("Formatted_dataset.bed")
 
+##############################################################################################################################
+
 """
 Using the corresponding bed file and human genome(hg38) fasta file, fasta sequences are extracted by using 
-'''
-$ bedtools getfasta -fi $(fasta_file.fa) -bed $(bed_file.bed)
-'''
 """
+
+$ bedtools getfasta -fi $(fasta_file.fa) -bed $(bed_file.bed)
 
 ##############################################################################################################################
 
