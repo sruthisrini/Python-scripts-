@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from transform import prepare_data,string_vectorizer,read_data_to_list
 from model import RNNDataset,LSTMModel
 import wandb
+from sklearn.metrics import f1_score
 import warnings
 
 wandb.init(project="multi-label")
