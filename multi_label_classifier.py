@@ -117,24 +117,46 @@ def binary_accuracy(preds, y):
 def test(test_loader, model, criterion, device):
     
     model.eval()
+    loss_all_test=0
+    global loss_test
+    f1_acc=0
     test_acc = 0.0
-
+    # roc=0
     for batch_data, batch_labels, batch_lens in test_loader:
         outputs, _ = model(batch_data, batch_lens, len(batch_labels))
         try:
+
             outputs = outputs.reshape([batch_size, 30])
             batch_labels=batch_labels.reshape([batch_size, 30])
             acc = binary_accuracy(outputs, batch_labels)
             test_acc += acc.item()
-          
+            sigmoid_outputs=torch.sigmoid(outputs)
+            sigmoid_outputs[np.where(sigmoid_outputs>=0.52)]=1
+            sigmoid_outputs[np.where(sigmoid_outputs<0.52)]=0
+            sigmoid_outputs=sigmoid_outputs.reshape([32,30])
+            batch_labels=batch_labels.reshape([32,30])
+            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
+            f1_acc+=f1_acc
+         
         except:
-            outputs = outputs.reshape([13, 30])
-            batch_labels=batch_labels.reshape([13, 30])
+            outputs = outputs.reshape([29, 30])
+            batch_labels=batch_labels.reshape([29, 30])
             acc = binary_accuracy(outputs, batch_labels)
             test_acc += acc.item()
-    
+            sigmoid_outputs=torch.sigmoid(outputs)
+            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
+            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
+            sigmoid_outputs=sigmoid_outputs.reshape([29,30])
+            batch_labels=batch_labels.reshape([29,30])
+            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
+            f1_acc+=f1_acc
+      
+
     test_acc = test_acc / len(test_loader)
-    return test_acc
+    f1_total_accuracy=f1_acc/len(test_loader)
+    loss_test=loss_all_test / len(test_loader.dataset)
+    return test_acc,f1_total_accuracy
+
 
 def patience(model,patience_count):
     
@@ -170,7 +192,7 @@ def pad_collate(batch):
     return xs_pad, ys,xs_lens
 
 if __name__ == "__main__":
-    csv_file_path = r"Dataset.csv"
+    csv_file_path = r"multi_dataset.csv"
     rna_vecs,rna_labels = prepare_data(csv_file_path)
     projmlc_dataset = RNNDataset(rna_vecs, rna_labels)
     projmlc_model = LSTMModel(input_dim=4, n_class=30, activation='sigmoid',device="cpu")
