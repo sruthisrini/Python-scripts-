@@ -124,22 +124,39 @@ def test(test_loader, model, criterion, device):
     # roc=0
     for batch_data, batch_labels, batch_lens in test_loader:
         outputs, _ = model(batch_data, batch_lens, len(batch_labels))
+        # batch_labels = batch_labels.reshape([len(batch_lens), 30])
         try:
 
             outputs = outputs.reshape([batch_size, 1])
             batch_labels=batch_labels.reshape([batch_size, 1])
             acc = binary_accuracy(outputs, batch_labels)
             test_acc += acc.item()
+            sigmoid_outputs=torch.sigmoid(outputs)
+            sigmoid_outputs[np.where(sigmoid_outputs>=0.52)]=1
+            sigmoid_outputs[np.where(sigmoid_outputs<0.52)]=0
+            sigmoid_outputs=sigmoid_outputs.reshape([32,1])
+            batch_labels=batch_labels.reshape([32,1])
+            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
+            f1_acc+=f1_acc
            
         except:
-            outputs = outputs.reshape([13, 1])
-            batch_labels=batch_labels.reshape([13, 1])
+            outputs = outputs.reshape([29, 1])
+            batch_labels=batch_labels.reshape([29, 1])
             acc = binary_accuracy(outputs, batch_labels)
             test_acc += acc.item()
-            
+            sigmoid_outputs=torch.sigmoid(outputs)
+            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
+            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
+            sigmoid_outputs=sigmoid_outputs.reshape([29,1])
+            batch_labels=batch_labels.reshape([29,1])
+            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
+            f1_acc+=f1_acc
+     
+
     test_acc = test_acc / len(test_loader)
+    f1_total_accuracy=f1_acc/len(test_loader)
     loss_test=loss_all_test / len(test_loader.dataset)
-    return test_acc
+    return test_acc,f1_total_accuracy
 
 
 def pad_collate(batch):
@@ -176,7 +193,7 @@ def patience(model,patience_count):
     return train_f1_score,val_f1_score
 
 if __name__ == "__main__":
-    csv_file_path = r"Dataset.csv"
+    csv_file_path = r"binary_dataset.csv"
     rna_vecs,rna_labels = prepare_data(csv_file_path)
     projmlc_dataset = RNNDataset(rna_vecs, rna_labels)
     projmlc_model = LSTMModel(input_dim=4, n_class=1, activation='sigmoid',device="cpu")
@@ -189,9 +206,16 @@ if __name__ == "__main__":
     
     validation_loader=DataLoader(dataset=val_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
     
-    test_loader=DataLoader(dataset=test_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
+    csv_file_path2 = r"multi_dataset.csv"
+    rna_vecs2,rna_labels2 = prepare_data(csv_file_path2)
+    projmlc_dataset2 = RNNDataset(rna_vecs2, rna_labels2)
     
-    optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001) 
+    multi_train_dataset,multi_test_dataset=train_test_split(projmlc_dataset2,test_size=0.2,random_state=0)  
+    
+    #the test dataset is the same as multi label test dataset
+    test_loader=DataLoader(dataset=multi_test_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)   
+    
+    optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)  
     
     patience(projmlc_model,5)
     
