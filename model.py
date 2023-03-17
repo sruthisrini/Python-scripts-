@@ -22,6 +22,7 @@ class LSTMModel(nn.Module):
                  bidirect=True,
                  add_feat=False,
                  dropout_rate=0.2,
+                 activation='sigmoid',
                  add_fc_layer=True,
                  embed=True,
                  embed_vocab_size=5,
@@ -107,5 +108,6 @@ class LSTMModel(nn.Module):
 
 if __name__ == "__main__":
     
-    test_model = LSTMModel(input_dim=4, n_class=30, device="cpu")
+    test_model = LSTMModel(input_dim=4, n_class=30,activation='sigmoid', device="cpu")   # for multi-label
+    test_model = LSTMModel(input_dim=4, n_class=1,activation='sigmoid', device="cpu")    # for binary
      
