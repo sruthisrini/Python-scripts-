@@ -37,7 +37,7 @@ def string_vectorizer(seq,empty_vectors=False,embed_numbers=False,embed_one_vec=
                 else:
                     vector.append([idx])
         else:
-            vector = torch.Tensor([[1 if char == letter else 0 for char in alphabet] for letter in seq])
+            vector = torch.Tensor([[1 if char == letter.upper() else 0 for char in alphabet] for letter in seq])
     return vector
 
 
