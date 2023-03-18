@@ -199,12 +199,10 @@ if __name__ == "__main__":
     projmlc_model = LSTMModel(input_dim=4, n_class=1, activation='sigmoid',device="cpu")
     batch_size=32
 
-    train_dataset,test_dataset=train_test_split(projmlc_dataset,test_size=0.2,random_state=0)
-    train_dataset_final, val_dataset=train_test_split(train_dataset, test_size=0.2, random_state=0)  
-
-    train_loader = DataLoader(dataset=train_dataset_final,batch_size=batch_size,collate_fn=pad_collate, pin_memory=True) 
-    
-    validation_loader=DataLoader(dataset=val_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
+    train_dataset, val_dataset=train_test_split(projmlc_dataset, test_size=0.2, random_state=0) 
+                   
+    train_loader = DataLoader(dataset=train_dataset,batch_size=batch_size,collate_fn=pad_collate, pin_memory=True) 
+    validation_loader = DataLoader(dataset=val_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
     
     csv_file_path2 = r"test_dataset.csv"
     rna_vecs2,rna_labels2 = prepare_data(csv_file_path2)
