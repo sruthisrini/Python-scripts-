@@ -206,7 +206,12 @@ if __name__ == "__main__":
     
     validation_loader=DataLoader(dataset=val_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
     
-    test_loader=DataLoader(dataset=test_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
+    csv_file_path2 = r"test_dataset.csv"
+    rna_vecs2,rna_labels2 = prepare_data(csv_file_path2)
+    projmlc_dataset2 = RNNDataset(rna_vecs2, rna_labels2)
+    
+    test_loader=DataLoader(dataset=projmlc_dataset2,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
+    
 
     optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)
     patience(projmlc_model,5)
