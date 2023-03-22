@@ -31,35 +31,20 @@ def train(model, optimizer, train_loader, criterion, batch_size, device):
     for batch_data, batch_labels, batch_lens in train_loader:
         optimizer.zero_grad()
         outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-        try:
+        outputs = outputs.reshape([len(batch_lens), 1,1])
+        loss = criterion(outputs, batch_labels)
+        loss_all_train += loss.item() * len(batch_labels)
+        loss.backward()
+        optimizer.step()
+        sigmoid_outputs=torch.sigmoid(outputs)
+        sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
+        sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
+        sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
+        batch_labels=batch_labels.reshape([len(batch_lens),1])
+        f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
+        f1_acc+=f1_acc
 
-            outputs = outputs.reshape([batch_size, 1,1])
-            loss = criterion(outputs, batch_labels)
-            loss_all_train += loss.item() * len(batch_labels)
-            loss.backward()
-            optimizer.step()
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([32,1])
-            batch_labels=batch_labels.reshape([32,1])
-            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-            f1_acc+=f1_acc
-
-        except:
-            outputs = outputs.reshape([25, 1,1])
-            loss = criterion(outputs, batch_labels)
-            loss_all_train += loss.item() * len(batch_labels)
-            loss.backward()
-            optimizer.step()
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([25,1])
-            batch_labels=batch_labels.reshape([25,1])
-            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-            f1_acc+=f1_acc
-
+       
     torch.save(model.state_dict(), model_path)
     f1_total_accuracy=f1_acc/len(test_loader)
     loss_train=loss_all_train / len(train_loader.dataset)
@@ -74,34 +59,18 @@ def validation(test_loader, model, batch_size, criterion, device):
 
     for batch_data, batch_labels, batch_lens in test_loader:
         outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-        try:
-
-            outputs = outputs.reshape([batch_size, 1,1])
-            loss = criterion(outputs, batch_labels)
-            loss_all_validation += loss.item() * len(batch_labels)
-            loss.backward()
-            optimizer.step()
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([32,1])
-            batch_labels=batch_labels.reshape([32,1])
-            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-            f1_acc+=f1_acc
-
-        except:
-            outputs = outputs.reshape([16, 1,1])
-            loss = criterion(outputs, batch_labels)
-            loss_all_validation += loss.item() * len(batch_labels)
-            loss.backward()
-            optimizer.step()
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([16,1])
-            batch_labels=batch_labels.reshape([16,1])
-            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-            f1_acc+=f1_acc
+        outputs = outputs.reshape([len(batch_lens), 1,1])
+        loss = criterion(outputs, batch_labels)
+        loss_all_validation += loss.item() * len(batch_labels)
+        loss.backward()
+        optimizer.step()
+        sigmoid_outputs=torch.sigmoid(outputs)
+        sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
+        sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
+        sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
+        batch_labels=batch_labels.reshape([len(batch_lens),1])
+        f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
+        f1_acc+=f1_acc
         
     f1_total_accuracy=f1_acc/len(test_loader)
     loss_validation=loss_all_validation / len(test_loader.dataset)
@@ -121,37 +90,19 @@ def test(test_loader, model, criterion, device):
     global loss_test
     f1_acc=0
     test_acc = 0.0
-    # roc=0
     for batch_data, batch_labels, batch_lens in test_loader:
         outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-        # batch_labels = batch_labels.reshape([len(batch_lens), 30])
-        try:
-
-            outputs = outputs.reshape([batch_size, 1])
-            batch_labels=batch_labels.reshape([batch_size, 1])
-            acc = binary_accuracy(outputs, batch_labels)
-            test_acc += acc.item()
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.52)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.52)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([32,1])
-            batch_labels=batch_labels.reshape([32,1])
-            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-            f1_acc+=f1_acc
-           
-        except:
-            outputs = outputs.reshape([29, 1])
-            batch_labels=batch_labels.reshape([29, 1])
-            acc = binary_accuracy(outputs, batch_labels)
-            test_acc += acc.item()
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([29,1])
-            batch_labels=batch_labels.reshape([29,1])
-            f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-            f1_acc+=f1_acc
-     
+        outputs = outputs.reshape([len(batch_lens), 1])
+        batch_labels=batch_labels.reshape([batch_size, 1])
+        acc = binary_accuracy(outputs, batch_labels)
+        test_acc += acc.item()
+        sigmoid_outputs=torch.sigmoid(outputs)
+        sigmoid_outputs[np.where(sigmoid_outputs>=0.52)]=1
+        sigmoid_outputs[np.where(sigmoid_outputs<0.52)]=0
+        sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
+        batch_labels=batch_labels.reshape([len(batch_lens),1])
+        f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
+        f1_acc+=f1_acc
 
     test_acc = test_acc / len(test_loader)
     f1_total_accuracy=f1_acc/len(test_loader)
