@@ -90,7 +90,7 @@ def validation(test_loader, model, batch_size, criterion, device):
             f1_acc+=f1_acc
 
         except:
-            outputs = outputs.reshape([31, 1,1])
+            outputs = outputs.reshape([16, 1,1])
             loss = criterion(outputs, batch_labels)
             loss_all_validation += loss.item() * len(batch_labels)
             loss.backward()
@@ -98,8 +98,8 @@ def validation(test_loader, model, batch_size, criterion, device):
             sigmoid_outputs=torch.sigmoid(outputs)
             sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
             sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([31,1])
-            batch_labels=batch_labels.reshape([31,1])
+            sigmoid_outputs=sigmoid_outputs.reshape([16,1])
+            batch_labels=batch_labels.reshape([16,1])
             f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
             f1_acc+=f1_acc
         
