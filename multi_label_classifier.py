@@ -95,7 +95,7 @@ def test(test_loader, model, criterion, device):
     for batch_data, batch_labels, batch_lens in test_loader:
         outputs, _ = model(batch_data, batch_lens, len(batch_labels))
         outputs = outputs.reshape([len(batch_lens), 30])
-        batch_labels=batch_labels.reshape([batch_size, 30])
+        batch_labels=batch_labels.reshape([len(batch_lens), 30])
         acc = binary_accuracy(outputs, batch_labels)
         test_acc += acc.item()
         sigmoid_outputs=torch.sigmoid(outputs)
