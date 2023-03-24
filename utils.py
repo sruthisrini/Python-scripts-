@@ -12,12 +12,14 @@ df=df[(df["File format"]=="bed narrowPeak")&(df["Biological replicate(s)"]=="1, 
         (df["Biosample term name"].isin(["HepG2","K562"]))]
                                                                                                                 
 ##############################################################################################################################
+"""
+To find overlap among the bed files, the following command is used in Linux terminal,
+"""
 
-"""
-After finding overlap among the bed files using 
-'$ bedtools intersect -a $(bed_file_1.bed) -b $(bed_file_2.bed) $(bed_file_3.bed) $(bed_file_4.bed)', 
-store it in a text file
-"""
+$ bedtools intersect -a $(bed_file_1.bed) -b $(bed_file_2.bed) $(bed_file_3.bed) $(bed_file_4.bed) > Intersect.txt
+
+##############################################################################################################################
+
 import pandas as pd
 data=pd.read_csv('file_path',sep='\t',header=None)
 
