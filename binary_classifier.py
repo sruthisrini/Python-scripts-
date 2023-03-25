@@ -159,7 +159,7 @@ if __name__ == "__main__":
     
     optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)  
     
-    patience(projmlc_model,5)
+    print(patience(projmlc_model,5))
 
     projmlc_model.load_state_dict(torch.load(model_path))
     projmlc_model.eval()
