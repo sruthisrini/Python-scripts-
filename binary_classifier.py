@@ -41,11 +41,9 @@ def train(model, optimizer, train_loader, criterion, batch_size, device):
         sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
         sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
         batch_labels=batch_labels.reshape([len(batch_lens),1])
-        f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-        f1_acc+=f1_acc
-
+        f1_acc+=f1_score(batch_labels.detach().numpy().astype(int),sigmoid_outputs.detach().numpy().astype(int),average='weighted')
        
-    torch.save(model.state_dict(), model_path)
+       
     f1_total_accuracy=f1_acc/len(test_loader)
     loss_train=loss_all_train / len(train_loader.dataset)
     return loss_train,f1_total_accuracy
@@ -62,15 +60,13 @@ def validation(test_loader, model, batch_size, criterion, device):
         outputs = outputs.reshape([len(batch_lens), 1,1])
         loss = criterion(outputs, batch_labels)
         loss_all_validation += loss.item() * len(batch_labels)
-        loss.backward()
-        optimizer.step()
         sigmoid_outputs=torch.sigmoid(outputs)
         sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
         sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
         sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
         batch_labels=batch_labels.reshape([len(batch_lens),1])
-        f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-        f1_acc+=f1_acc
+        f1_acc+=f1_score(batch_labels.detach().numpy().astype(int), sigmoid_outputs.detach().numpy().astype(int),average='weighted')
+        
         
     f1_total_accuracy=f1_acc/len(test_loader)
     loss_validation=loss_all_validation / len(test_loader.dataset)
@@ -97,12 +93,12 @@ def test(test_loader, model, criterion, device):
         acc = binary_accuracy(outputs, batch_labels)
         test_acc += acc.item()
         sigmoid_outputs=torch.sigmoid(outputs)
-        sigmoid_outputs[np.where(sigmoid_outputs>=0.52)]=1
-        sigmoid_outputs[np.where(sigmoid_outputs<0.52)]=0
+        sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
+        sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
         sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
         batch_labels=batch_labels.reshape([len(batch_lens),1])
-        f1_acc=f1_score(sigmoid_outputs.detach().numpy().astype(int), batch_labels.detach().numpy().astype(int), average='weighted')
-        f1_acc+=f1_acc
+        f1_acc+=f1_score(batch_labels.detach().numpy().astype(int), sigmoid_outputs.detach().numpy().astype(int),average='weighted')
+      
 
     test_acc = test_acc / len(test_loader)
     f1_total_accuracy=f1_acc/len(test_loader)
@@ -161,12 +157,9 @@ if __name__ == "__main__":
     
     test_loader=DataLoader(dataset=projmlc_dataset2,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
     
-    
     optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)  
     
     patience(projmlc_model,5)
-    
-    torch.save(projmlc_model.state_dict(), model_path)
 
     projmlc_model.load_state_dict(torch.load(model_path))
     projmlc_model.eval()
