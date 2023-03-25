@@ -160,7 +160,7 @@ if __name__ == "__main__":
     test_loader=DataLoader(dataset=projmlc_dataset2,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
 
     optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)
-    patience(projmlc_model,5)
+    print(patience(projmlc_model,5))
     
     projmlc_model.load_state_dict(torch.load(model_path))
     projmlc_model.eval()
