@@ -119,7 +119,7 @@ def patience(model,patience_count):
     elapsed_patience = 0
     c_epochs = 0
 
-    for epoch in range(1, 100):
+    for epoch in range(1, 200):
         c_epochs += 1
         if elapsed_patience >= patience_count:
             break
