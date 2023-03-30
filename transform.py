@@ -7,15 +7,23 @@ from model import RNNDataset
 from torch.nn.utils.rnn import pad_sequence
 
 
-def read_data_to_list(csv_file, skip_n_seqs=True):
+
+def read_data_to_list(csv_file, labels,skip_n_seqs=True):
     RNA_data = pd.read_csv(csv_file, header=0)
-    RNA_data=RNA_data.iloc[:,:2]  #only in case of binary classification
-    RNA_seq = RNA_data["Sequence"].tolist()
-
-    RNA_labels = RNA_data.iloc[::, 1:]
-    RNA_labels = RNA_labels.values.tolist()
-
+    if labels==1:
+        RNA_data=RNA_data.iloc[:,:2] #for binary
+        RNA_seq = RNA_data["Sequence"].tolist()[:100]
+        
+        RNA_labels = RNA_data.iloc[:100, 1:]
+        RNA_labels = RNA_labels.values.tolist()
+    else:
+        RNA_seq = RNA_data["Sequence"].tolist()[:100]
+    
+        RNA_labels = RNA_data.iloc[:100, 1:]
+        RNA_labels = RNA_labels.values.tolist()
     return RNA_seq, RNA_labels
+
+
 def string_vectorizer(seq,empty_vectors=False,embed_numbers=False,embed_one_vec=False,custom_alphabet=False):
     alphabet=['A','C','G','T']
     if custom_alphabet:
@@ -41,8 +49,11 @@ def string_vectorizer(seq,empty_vectors=False,embed_numbers=False,embed_one_vec=
     return vector
 
 
-def prepare_data(csv_filename):
-    rna_seq, rna_labels = read_data_to_list(csv_filename)
+def prepare_data(csv_filename,labels):
+    if labels==1:
+        rna_seq, rna_labels = read_data_to_list(csv_filename,1)
+    else:
+        rna_seq, rna_labels = read_data_to_list(csv_filename,30)
     rna_vec = []
     for seq in rna_seq:
         vec = string_vectorizer(seq)
