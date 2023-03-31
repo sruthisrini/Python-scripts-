@@ -12,15 +12,16 @@ def read_data_to_list(csv_file, labels,skip_n_seqs=True):
     RNA_data = pd.read_csv(csv_file, header=0)
     if labels==1:
         RNA_data=RNA_data.iloc[:,:2] #for binary
-        RNA_seq = RNA_data["Sequence"].tolist()[:100]
+        RNA_seq = RNA_data["Sequence"].tolist()
         
-        RNA_labels = RNA_data.iloc[:100, 1:]
+        RNA_labels = RNA_data.iloc[::, 1:]
         RNA_labels = RNA_labels.values.tolist()
     else:
-        RNA_seq = RNA_data["Sequence"].tolist()[:100]
+        RNA_seq = RNA_data["Sequence"].tolist()
     
-        RNA_labels = RNA_data.iloc[:100, 1:]
+        RNA_labels = RNA_data.iloc[::, 1:]
         RNA_labels = RNA_labels.values.tolist()
+        
     return RNA_seq, RNA_labels
 
 
