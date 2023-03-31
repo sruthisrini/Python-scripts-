@@ -7,13 +7,13 @@ from torch.nn import BCEWithLogitsLoss
 from torch.utils.data import DataLoader,Dataset
 from torch.nn.utils.rnn import pad_sequence
 from sklearn.model_selection import train_test_split
-from transform import prepare_data,string_vectorizer,read_data_to_list
-from model import RNNDataset,LSTMModel
+from transform_test import prepare_data,string_vectorizer,read_data_to_list
+from model_test import RNNDataset,LSTMModel
 import wandb
 from sklearn.metrics import f1_score
 import warnings
+import argparse
 
-wandb.init(project="multi-label")
 
 def warn(*args, **kwargs):
     pass
@@ -21,7 +21,8 @@ def warn(*args, **kwargs):
 warnings.warn = warn
 
 criterion = BCEWithLogitsLoss() 
-model_path=r"D:\multi_label_model.pt"
+model_path=r"saved_model.pt"
+
 def train(model, optimizer, train_loader, criterion, batch_size, device):
     model.train()
     global loss_train
@@ -29,40 +30,21 @@ def train(model, optimizer, train_loader, criterion, batch_size, device):
     f1_acc=0.0
 
     for batch_data, batch_labels, batch_lens in train_loader:
-        if args.labels==30:
-
+        
             optimizer.zero_grad()
             outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-            outputs = outputs.reshape([len(batch_lens), 1,30])
+            outputs = outputs.reshape([len(batch_lens), 1,args.labels])
             loss = criterion(outputs, batch_labels)
             loss_all_train += loss.item() * len(batch_labels)
             loss.backward()
             optimizer.step()
-        
             sigmoid_outputs=torch.sigmoid(outputs)
             sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
             sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),30])
-            batch_labels=batch_labels.reshape([len(batch_lens),30])
+            sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),args.labels])
+            batch_labels=batch_labels.reshape([len(batch_lens),args.labels])
             f1_acc+=f1_score(batch_labels.detach().numpy().astype(int), sigmoid_outputs.detach().numpy().astype(int),average='weighted')
         
-        elif args.labels==1:
-            
-            optimizer.zero_grad()
-            outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-            outputs = outputs.reshape([len(batch_lens), 1,1])
-            loss = criterion(outputs, batch_labels)
-            loss_all_train += loss.item() * len(batch_labels)
-            loss.backward()
-            optimizer.step()
-        
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
-            batch_labels=batch_labels.reshape([len(batch_lens),1])
-            f1_acc+=f1_score(batch_labels.detach().numpy().astype(int), sigmoid_outputs.detach().numpy().astype(int),average='weighted')
-          
     f1_total_accuracy=f1_acc/len(train_loader)
     loss_train=loss_all_train / len(train_loader.dataset)
     return loss_train,f1_total_accuracy
@@ -77,43 +59,36 @@ def validation(test_loader, model, batch_size, criterion, device):
 
 
     for batch_data, batch_labels, batch_lens in test_loader:
-        if args.labels==30:
-            outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-            outputs = outputs.reshape([len(batch_lens), 1,30])
-            loss = criterion(outputs, batch_labels)
-            loss_all_validation += loss.item() * len(batch_labels)  
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),30])
-            batch_labels=batch_labels.reshape([len(batch_lens),30])
-            f1_acc+=f1_score(batch_labels.detach().numpy().astype(int),sigmoid_outputs.detach().numpy().astype(int), average='weighted')
-
-        elif args.labels==1:
-            
-            outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-            outputs = outputs.reshape([len(batch_lens), 1,1])
-            loss = criterion(outputs, batch_labels)
-            loss_all_validation += loss.item() * len(batch_labels)
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
-            batch_labels=batch_labels.reshape([len(batch_lens),1])
-            f1_acc+=f1_score(batch_labels.detach().numpy().astype(int),sigmoid_outputs.detach().numpy().astype(int), average='weighted')
+        
+        outputs, _ = model(batch_data, batch_lens, len(batch_labels))
+        outputs = outputs.reshape([len(batch_lens), 1,args.labels])
+        loss = criterion(outputs, batch_labels)
+        loss_all_validation += loss.item() * len(batch_labels)  
+        sigmoid_outputs=torch.sigmoid(outputs)
+        sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
+        sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
+        sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),args.labels])
+        batch_labels=batch_labels.reshape([len(batch_lens),args.labels])
+        f1_acc+=f1_score(batch_labels.detach().numpy().astype(int),sigmoid_outputs.detach().numpy().astype(int), average='weighted')
 
     f1_total_accuracy=f1_acc/len(test_loader)
     loss_validation=loss_all_validation / len(test_loader.dataset)
     return loss_validation,f1_total_accuracy
 
 def binary_accuracy(preds, y):
-    
+    """
+    Accuracy calculation:
+    Round scores > 0 to 1, and scores <= 0 to 0 (using sigmoid function).
+
+    """
+
     rounded_preds = torch.round(torch.sigmoid(preds))
     
     correct = (rounded_preds[:][0] == y[:][0]).float()
-    print(y[:][0])
     acc = correct.sum()/len(correct)
     return acc
+
+
 
 def test(test_loader, model, device):
     
@@ -124,37 +99,33 @@ def test(test_loader, model, device):
     test_acc = 0.0
   
     for batch_data, batch_labels, batch_lens in test_loader:
-        if args.test_labels==30:
-            outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-            outputs = outputs.reshape([len(batch_lens), 30])
-            batch_labels=batch_labels.reshape([len(batch_lens), 30])
-            acc = binary_accuracy(outputs, batch_labels)
-            test_acc += acc.item()
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),30])
-            batch_labels=batch_labels.reshape([len(batch_lens),30])
-            f1_acc+=f1_score(batch_labels.detach().numpy().astype(int), sigmoid_outputs.detach().numpy().astype(int),average='weighted')
+        
+        outputs, _ = model(batch_data, batch_lens, len(batch_labels))
+        outputs = outputs.reshape([len(batch_lens), args.test_labels])
+        batch_labels=batch_labels.reshape([len(batch_lens), args.test_labels])
+        acc = binary_accuracy(outputs, batch_labels)
+        test_acc += acc.item()
+        sigmoid_outputs=torch.sigmoid(outputs)
+        sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
+        sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
+        sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),args.test_labels])
+        batch_labels=batch_labels.reshape([len(batch_lens),args.test_labels])
+        f1_acc+=f1_score(batch_labels.detach().numpy().astype(int), sigmoid_outputs.detach().numpy().astype(int),average='weighted')
 
-        elif args.test_labels==1:
-            outputs, _ = model(batch_data, batch_lens, len(batch_labels))
-            outputs = outputs.reshape([len(batch_lens), 1])
-            batch_labels=batch_labels.reshape([len(batch_lens), 1])
-            acc = binary_accuracy(outputs, batch_labels)
-            test_acc += acc.item()
-            sigmoid_outputs=torch.sigmoid(outputs)
-            sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
-            sigmoid_outputs[np.where(sigmoid_outputs<0.5)]=0
-            sigmoid_outputs=sigmoid_outputs.reshape([len(batch_lens),1])
-            batch_labels=batch_labels.reshape([len(batch_lens),1])
-            f1_acc+=f1_score(batch_labels.detach().numpy().astype(int), sigmoid_outputs.detach().numpy().astype(int),average='weighted')
-         
+        
     test_acc = test_acc / len(test_loader)
     f1_total_accuracy=f1_acc/len(test_loader)
     loss_test=loss_all_test / len(test_loader.dataset)
     return test_acc,f1_total_accuracy
 
+
+
+def pad_collate(batch):
+    (xs, ys) = zip(*batch)
+    xs_lens = [len(x) for x in xs]
+    xs_pad = pad_sequence(xs, batch_first=True, padding_value=0)
+    ys = torch.FloatTensor([[y] for y in ys])
+    return xs_pad, ys,xs_lens
 
 def patience(model,patience_count):
     
@@ -162,7 +133,7 @@ def patience(model,patience_count):
     elapsed_patience = 0
     c_epochs = 0
 
-    for epoch in range(1, 200):
+    for epoch in range(1, args.epoch):
         c_epochs += 1
         if elapsed_patience >= patience_count:
             break
@@ -182,13 +153,6 @@ def patience(model,patience_count):
     
     return train_f1_score,val_f1_score
 
-def pad_collate(batch):
-    (xs, ys) = zip(*batch)
-    xs_lens = [len(x) for x in xs]
-    xs_pad = pad_sequence(xs, batch_first=True, padding_value=0)
-    ys = torch.FloatTensor([[y] for y in ys])
-    return xs_pad, ys,xs_lens
-
 if __name__ == "__main__":
     tr_parser=argparse.ArgumentParser()
     tr_parser.add_argument('train_path',help="Enter the path to the folder containing dataset")
@@ -207,29 +171,32 @@ if __name__ == "__main__":
     else:
         rna_vecs,rna_labels = prepare_data(csv_file_path,30)
 
-    
+    wandb.init(project="project")
     projmlc_dataset = RNNDataset(rna_vecs, rna_labels)
     projmlc_model = LSTMModel(input_dim=4, n_class=args.labels, activation='sigmoid',device="cpu")
     batch_size=32
+    
     multi_train_dataset_final, multi_val_dataset=train_test_split(projmlc_dataset, test_size=0.2, random_state=0)  
+ 
     train_loader = DataLoader(dataset=multi_train_dataset_final,batch_size=batch_size,collate_fn=pad_collate, pin_memory=True) 
+    
     validation_loader=DataLoader(dataset=multi_val_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
 
-    
-    
     csv_file_path2=args.test_path
+    
     if args.test_labels==1:
         rna_vecs2,rna_labels2 = prepare_data(csv_file_path2,1)
     else:
         rna_vecs2,rna_labels2 = prepare_data(csv_file_path2,30)
 
     projmlc_dataset2 = RNNDataset(rna_vecs2, rna_labels2)
-    test_loader=DataLoader(dataset=projmlc_dataset2,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
     
+ 
+    test_loader=DataLoader(dataset=projmlc_dataset2,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
     optimizer = torch.optim.AdamW(projmlc_model.parameters(), lr=0.00001)  
 
     print(patience(projmlc_model,args.patience_val))
-    
+
     projmlc_model.load_state_dict(torch.load(model_path))
     projmlc_model.eval()
     print("test_acc,f1_total_accuracy:",test(test_loader=test_loader,model=projmlc_model,device="cpu"))
@@ -248,7 +215,6 @@ if __name__ == "__main__":
     df=pd.read_csv(csv_file_path)
     protein_names=df.columns.to_list()[1:]
     
-    pred_label=pred("CGAAGGACATAGGCGTCATCACAATGCAATAAAGACACACACAACCACACAGACGACTCGAATGACACAGACGTCATCACCATGCAACACACAGGACACACACAACCACGCAGACGACTCGAAGGACACAGGCGTCATCACAATGCAATACACAAGACACACACAACCACGCAG")
-    print([names for names, label in zip(protein_names,pred_label) if label == 1])
-
+    # pred_label=pred("CGAAGGACATAGGCGTCATCACAATGCAATAAAGACACACACAACCACACAGACGACTCGAATGACACAGACGTCATCACCATGCAACACACAGGACACACACAACCACGCAGACGACTCGAAGGACACAGGCGTCATCACAATGCAATACACAAGACACACACAACCACGCAG")
+    # print([names for names, label in zip(protein_names,pred_label) if label == 1])
 
