@@ -7,8 +7,8 @@ from torch.nn import BCEWithLogitsLoss
 from torch.utils.data import DataLoader,Dataset
 from torch.nn.utils.rnn import pad_sequence
 from sklearn.model_selection import train_test_split
-from transform_test import prepare_data,string_vectorizer,read_data_to_list
-from model_test import RNNDataset,LSTMModel
+from transform import prepare_data,string_vectorizer,read_data_to_list
+from model import RNNDataset,LSTMModel
 import wandb
 from sklearn.metrics import f1_score
 import warnings
