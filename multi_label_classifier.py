@@ -1,3 +1,18 @@
+"""
+multi_label_classifier.py -h
+
+positional arguments:
+  train_path    Enter the path to the folder containing dataset
+  {1,30}        Enter the number of labels. Label 1 is used for binary classifier and Label 30 is used for multi label classifier
+  epoch         Enter the number of epochs for training
+  patience_val  Enter a value for patience
+  test_path     Enter the path to the folder containing the test dataset
+  {1,30}        Enter the number of labels for testing. Label 1 is used for binary classifier and Label 30 is used for multi label classifier
+
+options:
+  -h, --help    show this help message and exit
+"""
+
 import torch
 from torch import Tensor
 import numpy as np
