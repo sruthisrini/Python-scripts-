@@ -75,6 +75,7 @@ def validation(test_loader, model, batch_size, criterion, device):
     loss_validation=loss_all_validation / len(test_loader.dataset)
     return loss_validation,f1_total_accuracy
 
+
 def binary_accuracy(preds, y):
     """
     Accuracy calculation:
