@@ -12,7 +12,7 @@ positional arguments:
 options:
   -h, --help    show this help message and exit
   
-To run the code:
+To clone the repository:
 git clone "https://github.com/sruthisrini/RNA-binding-protein-RBP.git"
 
 Example call:
