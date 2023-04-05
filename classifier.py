@@ -11,12 +11,16 @@ positional arguments:
 
 options:
   -h, --help    show this help message and exit
-  
+ 
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
 To clone the repository:
 git clone "https://github.com/sruthisrini/RNA-binding-protein-RBP.git"
 
 Example call:
-python classifier.py "train_dataset.csv" 30 100 10 "test_dataset.csv" 30
+python classifier.py "train_dataset.csv" 30 100 10 "test_dataset.csv" 30 (for multilabel)
+python classifier.py "train_dataset.csv" 1 100 10 "test_dataset.csv" 1 (for binary)
+
 """
 
 import torch
