@@ -1,5 +1,5 @@
 """
-multi_label_classifier.py -h
+classifier.py -h
 
 positional arguments:
   train_path    Enter the path to the folder containing dataset
