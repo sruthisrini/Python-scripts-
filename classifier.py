@@ -11,6 +11,10 @@ positional arguments:
 
 options:
   -h, --help    show this help message and exit
+  
+To run the code:
+git clone "https://github.com/sruthisrini/RNA-binding-protein-RBP.git"
+python classifier.py "train_dataset.csv" 30 100 10 "test_dataset.csv" 30
 """
 
 import torch
