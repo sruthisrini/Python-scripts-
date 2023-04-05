@@ -101,7 +101,7 @@ def validation(test_loader, model, batch_size, criterion, device):
     return loss_validation,f1_total_accuracy
 
 
-def binary_accuracy(preds, y):
+def accuracy(preds, y):
     """
     Accuracy calculation:
     Round scores > 0 to 1, and scores <= 0 to 0 (using sigmoid function).
@@ -129,7 +129,7 @@ def test(test_loader, model, device):
         outputs, _ = model(batch_data, batch_lens, len(batch_labels))
         outputs = outputs.reshape([len(batch_lens), args.test_labels])
         batch_labels=batch_labels.reshape([len(batch_lens), args.test_labels])
-        acc = binary_accuracy(outputs, batch_labels)
+        acc = accuracy(outputs, batch_labels)
         test_acc += acc.item()
         sigmoid_outputs=torch.sigmoid(outputs)
         sigmoid_outputs[np.where(sigmoid_outputs>=0.5)]=1
@@ -202,11 +202,11 @@ if __name__ == "__main__":
     projmlc_model = LSTMModel(input_dim=4, n_class=args.labels, activation='sigmoid',device="cpu")
     batch_size=32
     
-    multi_train_dataset_final, multi_val_dataset=train_test_split(projmlc_dataset, test_size=0.2, random_state=0)  
+    train_dataset_final, val_dataset=train_test_split(projmlc_dataset, test_size=0.2, random_state=0)  
  
-    train_loader = DataLoader(dataset=multi_train_dataset_final,batch_size=batch_size,collate_fn=pad_collate, pin_memory=True) 
+    train_loader = DataLoader(dataset=train_dataset_final,batch_size=batch_size,collate_fn=pad_collate, pin_memory=True) 
     
-    validation_loader=DataLoader(dataset=multi_val_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
+    validation_loader=DataLoader(dataset=val_dataset,batch_size=batch_size,collate_fn=pad_collate,pin_memory=True)
 
     csv_file_path2=args.test_path
     
