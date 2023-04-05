@@ -14,6 +14,8 @@ options:
   
 To run the code:
 git clone "https://github.com/sruthisrini/RNA-binding-protein-RBP.git"
+
+Example call:
 python classifier.py "train_dataset.csv" 30 100 10 "test_dataset.csv" 30
 """
 
