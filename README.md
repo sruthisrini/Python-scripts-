@@ -64,7 +64,30 @@ sklearn
 collections
 pyranges
 ```
+## Run the code from the terminal
+```
+classifier.py -h
 
+positional arguments:
+  train_path    Enter the path to the folder containing dataset
+  {1,30}        Enter the number of labels. Label 1 is used for binary classifier and Label 30 is used for multi label classifier
+  epoch         Enter the number of epochs for training
+  patience_val  Enter a value for patience
+  test_path     Enter the path to the folder containing the test dataset
+  {1,30}        Enter the number of labels for testing. Label 1 is used for binary classifier and Label 30 is used for multi label classifier
+
+options:
+  -h, --help    show this help message and exit
+ 
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+To clone the repository:
+git clone "https://github.com/sruthisrini/RNA-binding-protein-RBP.git"
+
+Example call:
+python classifier.py "train_dataset.csv" 30 100 10 "test_dataset.csv" 30 (for multilabel)
+python classifier.py "train_dataset.csv" 1 100 10 "test_dataset.csv" 1 (for binary)
+```
 ## Documentation
 
 * The model.py file contains the LSTM model for both binary and multi-label classifiers. Only the number of classes needs to be changed based on the number of labels we have. 
